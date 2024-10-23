@@ -1,0 +1,324 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+}
+
+/* Vertical NavBar */
+.navbar {
+    width: 200px;
+    height: 100vh;
+    background-color: #2c3e50;
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    padding-top: 20px;
+}
+
+.navbar a {
+    padding: 15px;
+    top:30px;
+    text-decoration: none;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+    background-color: #34495e;
+    margin: 10px 0;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.navbar a:hover {
+    background-color: #2980b9;
+    transform: translateX(5px); /* Add a little movement effect on hover */
+}
+
+.navbar i {
+    font-size: 35px;
+}
+
+/* Header */
+.header {
+    margin-left: 200px;
+    height: 60px;
+    background-color: #ecf0f1;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    justify-content: space-between;
+}
+
+.search-wrapper {
+    position: relative;
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.search-bar input {
+    width: 100%;
+    padding: 8px 40px 8px 10px; /* Add right padding for the icon space */
+    font-size: 16px;
+    border: 1px solid #bdc3c7;
+    border-radius: 20px;
+}
+
+/* Search button (Icon) inside input field */
+.search-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.search-btn img {
+    width: 20px;
+    height: 20px;
+}
+
+.icons {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    margin-left: auto; /* Push icons to the right */
+}
+
+.icon {
+    position: relative;
+    cursor: pointer;
+}
+
+.icon i {
+    font-size: 30px;
+}
+.icon:hover .dropdown, .icon:focus-within .dropdown {
+    display: block;
+}
+
+.dropdown {
+    display: none;
+    position: absolute;
+    top: 40px;
+    right: 0;
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 150px;
+    padding: 10px 0;
+    z-index: 100;
+}
+
+.dropdown a {
+    text-decoration: none;
+    padding: 10px;
+    display: block;
+    color: #333;
+}
+
+.dropdown a:hover {
+    background-color: #f1f1f1;
+}
+
+/* Main Container */
+.container {
+    margin-left: 200px;
+    padding: 20px;
+    padding-top: 80px;
+}
+
+.buttons {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.buttons a {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #477eec; /* Background color is now black */
+    color: white; /* White text */
+    border: none;
+    border-radius: 4px;
+    text-decoration: none; /* Remove underline */
+    transition: background-color 0.3s ease; /* Smooth transition for background */
+}
+
+.buttons a:hover {
+    background-color: #555; /* Darker shade on hover */
+}
+
+.contacts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.contact {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Space out the contact info and actions */
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+    transition: background-color 0.3s ease;
+    text-decoration: none; /* Remove underline from link */
+    color: inherit; /* Use the default text color */
+}
+
+.contact:hover {
+    background-color: #e0e0e0; /* Change background color on hover */
+}
+
+.contact-initial {
+    background-color: #007bff; /* Background color for initials */
+    color: white; /* Text color for initials */
+    border-radius: 50%; /* Circular shape */
+    width: 40px; /* Width of the circle */
+    height: 40px; /* Height of the circle */
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Center the text */
+    font-size: 20px; /* Font size of the initials */
+    font-weight: bold; /* Bold text for initials */
+    margin-right: 10px; /* Space between initial and contact name */
+}
+
+.contact-content {
+    font-size: 18px;
+    font-weight: bold;
+    flex-grow: 1; /* Make contact content take available space */
+}
+
+.contact-actions {
+    display: flex; /* Flex container for action buttons */
+    gap: 10px; /* Space between action buttons */
+}
+
+.contact-actions i {
+    cursor: pointer; /* Change cursor to pointer */
+    color: black; /* Icon color */
+    font-size: 20px; /* Icon size */
+    transition: color 0.3s ease; /* Transition effect */
+}
+
+.contact-actions i:hover {
+    color: #007bff; /* Change icon color on hover */
+}
+.contacts-list {
+    display: flex; /* Use flexbox for layout */
+    flex-direction: column; /* Stack contacts vertically */
+}
+
+.contact {
+    display: flex; /* Use flexbox for each contact */
+    justify-content: space-between; /* Space between contact content and actions */
+    align-items: center; /* Center items vertically */
+    padding: 10px; /* Add some padding */
+    border-bottom: 1px solid #ddd; /* Optional: Add a bottom border for separation */
+}
+
+.contact-initial {
+    margin-right: 10px; /* Spacing between the initial and the name */
+    font-weight: bold; /* Make the initial bold */
+}
+
+.contact-content {
+    flex-grow: 1; /* Allow the content to grow and take up space */
+}
+
+.contact-actions {
+    display: flex; /* Flexbox for actions */
+    align-items: center; /* Center icons vertically */
+}
+
+.contact-actions a {
+    text-decoration: none; /* Remove underline */
+    color: inherit; /* Keep the default text color */
+    margin-left: 10px; /* Space between icons */
+}
+
+.contact-actions i {
+    font-size: 20px; /* Adjust icon size */
+    cursor: pointer; /* Pointer cursor on hover */
+    color: #333; /* Default color for icons */
+}
+
+.contact-actions a:hover i {
+    color: #007bff; /* Change color on hover */
+}
+.contact {
+    display: flex; /* Use flexbox for layout */
+    justify-content: space-between; /* Space between content and actions */
+    align-items: center; /* Center items vertically */
+    padding: 10px; /* Add some padding */
+    border-bottom: 1px solid #ddd; /* Optional: Add bottom border for separation */
+}
+
+.contact-link {
+    display: flex; /* Use flexbox to align initials and name */
+    align-items: center; /* Center items vertically */
+    text-decoration: none; /* Remove underline from link */
+    color: inherit; /* Inherit text color */
+    flex-grow: 1; /* Allow link to take remaining space */
+}
+
+.contact-link:hover {
+    background-color: #f0f0f0; /* Optional: Change background on hover for visual feedback */
+}
+   /* Add your styles here */
+   .contacts-list {
+    margin-top: 20px;
+}
+
+.contact {
+    display: flex; /* Flex layout for contact container */
+    justify-content: space-between; /* Space between content and actions */
+    align-items: center; /* Center items vertically */
+    padding: 10px; /* Padding for the contact */
+    border: 1px solid #ccc; /* Border for separation */
+    border-radius: 5px; /* Rounded corners */
+    margin-bottom: 10px; /* Space between contacts */
+    text-decoration: none; /* Remove underline */
+    color: black; /* Default text color */
+}
+
+.contact:hover {
+    background-color: #f0f0f0; /* Light background on hover */
+}
+
+.contact-initial {
+    background-color: #007bff; /* Initial circle color */
+    color: white; /* Initial text color */
+    width: 40px; /* Circle width */
+    height: 40px; /* Circle height */
+    border-radius: 50%; /* Make it a circle */
+    display: flex; /* Flex to center the text */
+    align-items: center; /* Center vertically */
+    justify-content: center; /* Center horizontally */
+    font-size: 16px; /* Initial text size */
+    margin-right: 10px; /* Space between initial and name */
+}
+
+.contact-actions {
+    display: flex; /* Flex layout for actions */
+    gap: 10px; /* Space between action icons */
+}
+
+.contact-actions a {
+    color: black; /* Action icon color */
+}
+
+.contact-actions a:hover {
+    color: #007bff; /* Change color on hover */
+}

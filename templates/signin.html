@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <style>body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+    
+    .login-container {
+        display: flex;
+        background-color: #ffffff;
+        border-radius: 20px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        width: 1000px; /* Adjust width for better image and form visibility */
+        height: 600px; /* Set a height for the container */
+    }
+    
+    /* Left side for the image */
+    .login-image {
+        flex: 2; /* Increased flex value for the image */
+        background-image: url("/static/signup.jpeg");
+        background-size: cover; /* Ensures the image covers the entire area */
+        background-position: center;
+    }
+    
+    /* Right side for the form */
+    .login-form {
+        flex: 1; /* Decreased flex value for the form */
+        padding: 60px; /* Reduced padding */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    
+    h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #333;
+    }
+    
+    input[type="text"],
+    input[type="password"] {
+        width: 100%;
+        padding: 10px;
+        margin: 8px 0;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+    
+    input[type="submit"] {
+        width: 100%;
+        background-color: #477eec;
+        color: white;
+        padding: 10px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    
+    input[type="submit"]:hover {
+        background-color: #218838;
+    }
+    
+    .remember-me {
+        display: flex;
+        align-items: center;
+        margin: 10px 0;
+    }
+    
+    .remember-me input {
+        margin-right: 5px;
+    }
+    
+    
+    .new-user {
+        text-align: left;
+        display: block;
+        margin-top: 10px;
+    }
+    
+    .new-user a {
+        text-decoration: none;
+        color: #007bff;
+    }
+    
+    .new-user a:hover {
+        text-decoration: underline;
+    }
+    .forgot-password {
+        text-align: right;
+        display: block;
+        margin-top: 5px;
+        text-decoration: none;
+        color: #007bff;
+        text-decoration: underline;
+    }</style>
+</head>
+<body>
+
+    <div class="login-container">
+        <div class="login-image">
+        </div>
+        <div class="login-form">
+        
+        <h2>Login</h2>
+        <form action="/signin" method="POST">
+            <label for="username">Username or Email:</label>
+            <div class="input-box">
+            <input type="text" id="username" name="identifier" placeholder="Enter your username" required>
+            </div>
+            <br>
+            <label for="password">Password:</label>
+            <div class="input-box">
+            <input type="password" id="password" name="password" placeholder="Enter your password" required>
+            </div>   
+            <br>
+                
+            <div class="remember-me">
+                <input type="checkbox" id="remember" name="remember">
+                <label for="remember">Remember me</label>
+            </div>
+            <br>
+            <input type="submit" value="Login">
+            <br>
+            <div class="new-user">
+                <a href="/signup">New to the website?</a><br><br>
+                <a href="/forgot-password" class="forget-password">Forgot your password?</a>
+            </div>
+        </div>    
+        </form>
+        {% if error %}
+        <p style="color:red">{{ error }}</p>
+        {% endif %}
+    </div>
+
+</body>
+</html>

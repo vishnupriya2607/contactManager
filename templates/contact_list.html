@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contacts Page</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* Add your styles here */
+        .contacts-list {
+            margin-top: 20px;
+        }
+        
+        .contact {
+            display: flex; /* Flex layout for contact container */
+            justify-content: space-between; /* Space between content and actions */
+            align-items: center; /* Center items vertically */
+            padding: 10px; /* Padding for the contact */
+            border: 1px solid #ccc; /* Border for separation */
+            border-radius: 5px; /* Rounded corners */
+            margin-bottom: 10px; /* Space between contacts */
+            text-decoration: none; /* Remove underline */
+            color: black; /* Default text color */
+        }
+
+        .contact:hover {
+            background-color: #f0f0f0; /* Light background on hover */
+        }
+
+        .contact-initial {
+            background-color: #007bff; /* Initial circle color */
+            color: white; /* Initial text color */
+            width: 40px; /* Circle width */
+            height: 40px; /* Circle height */
+            border-radius: 50%; /* Make it a circle */
+            display: flex; /* Flex to center the text */
+            align-items: center; /* Center vertically */
+            justify-content: center; /* Center horizontally */
+            font-size: 16px; /* Initial text size */
+            margin-right: 10px; /* Space between initial and name */
+        }
+
+        .contact-actions {
+            display: flex; /* Flex layout for actions */
+            gap: 10px; /* Space between action icons */
+        }
+
+        .contact-actions a {
+            color: black; /* Action icon color */
+        }
+
+        .contact-actions a:hover {
+            color: #007bff; /* Change color on hover */
+        }
+    </style>
+</head>
+<body>
+    <!-- Vertical NavBar -->
+    <div class="navbar">
+        <br><br>
+        <a href="#"><i class="fas fa-address-book"></i> <br>Contacts</a>
+        <a href="#"><i class="fas fa-star"></i><br>Highlights</a>
+        <a href="#"><i class="fas fa-cog"></i> <br>Organize</a>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <div class="search-wrapper">
+            <form action="{{ url_for('search_contacts') }}" method="get" class="search-bar">
+                <input type="text" name="query" placeholder="Search Contacts...">
+                <button type="submit" class="search-btn">
+                    <img src="https://cdn-icons-png.flaticon.com/512/149/149852.png" alt="Search Icon">
+                </button>
+            </form>
+        </div>
+
+        <div class="icons">
+            <div class="icon">
+                <i class="fas fa-bell"></i>
+                <div class="dropdown">
+                    <a href="#">Notification 1</a>
+                    <a href="#">Notification 2</a>
+                    <a href="#">Notification 3</a>
+                </div>
+            </div>
+            <div class="icon">
+                <i class="fas fa-user-circle"></i>
+                <div class="dropdown">
+                    <a href="#">Profile</a>
+                    <a href="#">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <div class="buttons">
+            <a href="{{ url_for('create_contact') }}" class="btn">Add</a>
+            <a href="{{ url_for('view_groups') }}" class="btn">Group</a>
+        </div>
+
+        <div class="contacts-list">
+            {% for contact in contacts %}
+            <div class="contact">
+                <a href="{{ url_for('get_contact', contact_id=contact[0]) }}" style="flex-grow: 1; display: flex; align-items: center; text-decoration: none; color: inherit;"> <!-- Make the entire contact clickable -->
+                    <div class="contact-initial">{{ contact[2][0]|upper }}</div>
+                    <div class="contact-content" style="margin-left: 10px;">{{ contact[2] }}</div>
+                </a>
+                
+                <div class="contact-actions">
+                    <a href="{{ url_for('update_contact', contact_id=contact[0]) }}" title="Edit">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <a href="{{ url_for('delete_contact', contact_id=contact[0]) }}" title="Delete" onclick="return confirm('Are you sure you want to delete this contact?');">
+                        <i class="fas fa-trash-alt"></i>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,142 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Contact Manager</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .signup-container {
+            display: flex;
+            background-color: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            width: 1000px; /* Adjust width for better image and form visibility */
+            height: 600px; /* Set a height for the container */
+        }
+
+        /* Left side for the image */
+        .signup-image {
+            flex: 2; /* Increased flex value for the image */
+            background-image: url("/static/signup.jpeg");
+            background-size: cover; /* Ensures the image covers the entire area */
+            background-position: center;
+        }
+
+        /* Right side for the form */
+        .signup-form {
+            flex: 1; /* Decreased flex value for the form */
+            padding: 60px; /* Reduced padding */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color : #333;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"] {
+            width: 100%;
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        .terms {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+
+        .terms input {
+            margin-right: 5px;
+        }
+
+        .already-have-account {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .already-have-account a {
+            text-decoration: none;
+            color: #007bff;
+        }
+
+        .already-have-account a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="signup-container">
+        <!-- Left Side: Image Section -->
+        <div class="signup-image">
+        </div>
+
+        <!-- Right Side: Form Section -->
+        <div class="signup-form">
+            
+            <h2>Create an Account</h2>
+            <br>
+            <form action="/signup" method="POST">
+                <label for="fullname">Full Name:</label>
+                <input type="text" id="fullname" name="username" placeholder="Enter your full name" required>
+
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email address" required>
+                
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+
+                <label for="confirm-password">Confirm Password:</label>
+                <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm your password" required>
+
+                <div class="terms">
+                    <input type="checkbox" id="terms" name="terms" required>
+                    <label for="terms">I agree to the <a href="/terms" target="_blank">Terms and Conditions</a></label>
+                </div>
+
+                <input type="submit" value="Sign Up">
+
+                <div class="already-have-account">
+                    <p>Already have an account? <a href="/signin">Log in</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>

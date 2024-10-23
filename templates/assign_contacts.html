@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assign Contacts to Group</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Main Container */
+        .container {
+            margin-left: 220px;
+            padding: 20px;
+            padding-top: 80px;
+        }
+
+        /* Navbar Styling */
+        .navbar {
+            width: 200px;
+            height: 100vh;
+            background-color: #2c3e50;
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            padding-top: 20px;
+        }
+
+        .navbar a {
+            padding: 15px;
+            text-decoration: none;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            background-color: #34495e;
+            margin: 10px 0;
+            transition: background-color 0.3s, transform 0.3s;
+            border-left: 5px solid transparent;
+        }
+
+        .navbar a:hover {
+            background-color: #2980b9;
+            transform: translateX(5px);
+        }
+
+        .navbar i {
+            font-size: 20px;
+        }
+
+        /* Header Styling */
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        /* Form Styles */
+        form {
+            margin-bottom: 20px;
+        }
+
+        /* List Styles */
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Checkbox Styling */
+        input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+        /* Button Styles */
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: white;
+            background-color: #3498db;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s, box-shadow 0.3s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Link Styling */
+        a {
+            color: #3498db;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <!-- Vertical NavBar -->
+    <div class="navbar">
+        <a href="#"><i class="fas fa-address-book"></i> Contacts</a>
+        <a href="#"><i class="fas fa-star"></i> Highlights</a>
+        <a href="#"><i class="fas fa-cog"></i> Organise</a>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <h1>Assign Contacts to {{ group[1] }}</h1>
+        <form action="{{ url_for('assign_contacts', group_name=group[2]) }}" method="POST">
+            <ul>
+                {% for contact in contacts %}
+                    <li>
+                        <input type="checkbox" name="contacts" value="{{ contact[0] }}">
+                         {{ contact[2] }} - {{ contact[3] }}
+                    </li>
+                {% endfor %}
+            </ul>
+            <button type="submit">Assign Selected Contacts</button>
+        </form>
+        <a href="{{ url_for('view_groups') }}">Back to Groups</a>
+    </div>
+</body>
+</html>

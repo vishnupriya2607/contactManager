@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Contact</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f4f8; /* Light background color for a clean look */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* Full height for centering */
+        }
+
+        .container {
+            display: flex;
+            width: 80%; /* Adjust width as needed */
+            max-width: 1200px; /* Maximum width */
+            background-color: white; /* Background for the container */
+            border-radius: 8px; /* Rounded corners */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+        }
+
+        .image-section {
+            flex: 1; /* Allow this section to take available space */
+            background-image: url('http://www.marshalsecurity.ca/wp-content/uploads/2014/02/contactus.jpg'); /* Replace with your image URL */
+            background-size: cover; /* Cover the entire section */
+            border-top-left-radius: 8px; /* Rounded corners */
+            border-bottom-left-radius: 8px; /* Rounded corners */
+        }
+
+        .form-section {
+            flex: 1; /* Allow this section to take available space */
+            padding: 20px; /* Spacing inside the form */
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #333; /* Dark text color */
+        }
+
+        label {
+            display: block; /* Stack labels vertically */
+            margin: 10px 0 5px; /* Spacing around labels */
+            color: #555; /* Slightly lighter text for labels */
+        }
+
+        input[type="text"],
+        input[type="email"] {
+            width: 100%; /* Full width for inputs */
+            padding: 10px; /* Padding inside the inputs */
+            border: 1px solid #ccc; /* Light border */
+            border-radius: 5px; /* Rounded corners */
+            margin-bottom: 15px; /* Spacing between inputs */
+            font-size: 16px; /* Font size for inputs */
+        }
+
+        input[type="checkbox"] {
+            margin-left: 5px; /* Space to the left of the checkbox */
+        }
+
+        button {
+            background-color: #007bff; /* Primary button color */
+            color: white; /* White text color */
+            padding: 10px; /* Padding inside the button */
+            border: none; /* No border */
+            border-radius: 5px; /* Rounded corners */
+            cursor: pointer; /* Pointer cursor on hover */
+            font-size: 16px; /* Font size for button */
+            transition: background-color 0.3s; /* Smooth transition for hover */
+        }
+
+        button:hover {
+            background-color: #0056b3; /* Darker shade on hover */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="image-section"></div>
+        <div class="form-section">
+            <h2>Create Contact</h2>
+            <form action="/contacts" method="POST">
+                <label>First Name:</label>
+                <input type="text" name="first_name" required>
+                <label>Last Name:</label>
+                <input type="text" name="last_name">
+                <label>Phone Number:</label>
+                <input type="text" name="phone_number">
+                <label>Email:</label>
+                <input type="email" name="email" required>
+                <label>Address:</label>
+                <input type="text" name="address">
+                <input type="text" name="group_name" placeholder="Group Name (optional)">
+                <label>Favorite:</label>
+                <input type="checkbox" name="is_favorite"><br>
+                <button type="submit">Create</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

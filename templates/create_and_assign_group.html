@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create and Assign Group</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Create and Assign Group</h1>
+    <form action="{{ url_for('create_group') }}" method="POST">
+        <input type="text" name="group_name" placeholder="Group Name" required>
+        <h2>Select Contacts to Assign:</h2>
+        <ul>
+            {% for contact in contacts %}
+                <li>
+                    <input type="checkbox" name="contacts" value="{{ contact[0] }}">
+                    {{ contact[1] }} {{ contact[2] }} - {{ contact[3] }}
+                </li>
+            {% endfor %}
+        </ul>
+        <button type="submit">Create Group and Assign Contacts</button>
+    </form>
+    <a href="{{ url_for('get_contacts') }}">Back to Contacts</a>
+</body>
+</html>
