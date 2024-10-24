@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Manager</title>
+    <link rel="stylesheet" href="static/styles.css"> <!-- Link to your CSS -->
+</head>
+<body>
+    <header>
+        <h1>Contact Manager</h1>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('get_contacts') }}">Contacts</a></li>
+                <li><a href="{{ url_for('view_groups') }}">Groups</a></li>
+                {% if is_logged_in() %}
+                    <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('signin') }}">Signin</a></li>
+                    <li><a href="{{ url_for('signup') }}">Signup</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class="flashes">
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; {{ current_year }} Contact Manager. All rights reserved.</p>
+    </footer>
+</body>
+</html>

@@ -35,13 +35,7 @@ def signup():
     return render_template('signup.html')
 
 
-@app.route('/notification/<int:notification_id>')
-def view_notification(notification_id):
-    try:
-        notification = get_notification_by_id(notification_id)
-        return render_template('notification_detail.html', notification=notification)
-    except ValueError:
-        return jsonify({'error': 'Invalid notification ID'}), 400
+
 
 @app.route('/signin', methods=['GET', 'POST'])
 def signin():
@@ -61,8 +55,6 @@ def signin():
             return render_template('signin.html', error="Invalid email/username or password")
 
     return render_template('signin.html')
-
-# Create contact route
 
 # Create contact route
 @app.route('/contacts', methods=['GET', 'POST'])
@@ -106,19 +98,38 @@ def add_important_date(contact_id):
     return redirect(url_for('get_contacts'))
 
 # Get notifications for upcoming important dates
-@app.route('/notifications')
-def get_notifications():
+
+
+@app.route('/notification/<int:notification_id>')
+def view_notification(notification_id):
     if not is_logged_in():
         return redirect(url_for('signin'))
-
+    
     cursor = mysql.connection.cursor()
+    
+    # Fetch the specific notification details
     cursor.execute('''SELECT * FROM important_dates 
-                      WHERE user_id = %s AND important_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 7 DAY)''', 
-                   (session['user_id'],))
-    upcoming_dates = cursor.fetchall()
+                      WHERE id = %s AND user_id = %s''', 
+                   (notification_id, session['user_id']))
+    notification = cursor.fetchone()
+    print(notification)
+    if notification:
+        # Mark the notification as seen
+        cursor.execute('''UPDATE important_dates 
+                          SET seen = 1 
+                          WHERE id = %s AND user_id = %s''', 
+                       (notification_id, session['user_id']))
+        mysql.connection.commit()  # Commit the changes to the database
+    
     cursor.close()
+    
+    if notification:
+        # Render a template to show the details of the specific notification
+        return render_template('notification_detail.html', notification=notification)
+    else:
+        # If no such notification is found, redirect to the notifications page
+        return redirect(url_for('get_notifications'))
 
-    return render_template('notifications.html', upcoming_dates=upcoming_dates)
 
 # Delete outdated important dates
 @app.before_request
@@ -214,10 +225,28 @@ def search_contacts():
         return redirect(url_for('signin'))
 
     query = request.args.get('query', '')
+    filter_type = request.args.get('filter', 'name')
+    
     cursor = mysql.connection.cursor()
-    cursor.execute('''SELECT * FROM contact WHERE user_id = %s AND 
-                      (first_name LIKE %s OR last_name LIKE %s OR phone_number LIKE %s OR email LIKE %s OR blood_group LIKE %s  OR address LIKE %s)''',
-                   (session['user_id'], f'%{query}%', f'%{query}%', f'%{query}%', f'%{query}%', f'%{query}%',f'%{query}%'))
+
+    if filter_type == 'name':
+        cursor.execute('''SELECT * FROM contact WHERE user_id = %s AND 
+                          (first_name LIKE %s OR last_name LIKE %s)''',
+                       (session['user_id'], f'%{query}%', f'%{query}%'))
+    elif filter_type == 'blood_group':
+        cursor.execute('''SELECT * FROM contact WHERE user_id = %s AND 
+                          blood_group LIKE %s''',
+                       (session['user_id'], f'%{query}%'))
+    elif filter_type == 'place':
+        cursor.execute('''SELECT * FROM contact WHERE user_id = %s AND 
+                          address LIKE %s''',
+                       (session['user_id'], f'%{query}%'))
+    else:
+        # Default case: Search by name
+        cursor.execute('''SELECT * FROM contact WHERE user_id = %s AND 
+                          (first_name LIKE %s OR last_name LIKE %s)''',
+                       (session['user_id'], f'%{query}%', f'%{query}%'))
+
     contacts = cursor.fetchall()
     cursor.close()
 
@@ -317,7 +346,16 @@ def create_group_and_assign():
 
 @app.route('/logout')
 def logout():
-    session.pop('user_id', None)
+    if 'user_id' in session:
+        user_id = session['user_id']
+        session.pop('user_id', None)
+        
+        # Reset all notifications to unseen for this user
+        cursor = mysql.connection.cursor()
+        cursor.execute('UPDATE important_dates SET seen = 0 WHERE user_id = %s', (user_id,))
+        mysql.connection.commit()
+        cursor.close()
+    
     return redirect(url_for('signin'))
 
 if __name__ == '__main__':
