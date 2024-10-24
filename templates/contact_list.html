@@ -11,7 +11,7 @@
         .contacts-list {
             margin-top: 20px;
         }
-        
+
         .contact {
             display: flex; /* Flex layout for contact container */
             justify-content: space-between; /* Space between content and actions */
@@ -53,7 +53,58 @@
         .contact-actions a:hover {
             color: #007bff; /* Change color on hover */
         }
+
+        /* Dropdown styles */
+        .dropdown {
+            display: none; /* Hide by default */
+            position: absolute; /* Position it below the icon */
+            background-color: white; /* White background for dropdown */
+            border: 1px solid #ccc; /* Border for separation */
+            border-radius: 5px; /* Rounded corners */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            z-index: 1; /* Ensure it appears above other elements */
+        }
+
+        .dropdown a {
+            display: block; /* Each link takes full width */
+            padding: 10px; /* Padding for clickable area */
+            color: black; /* Link color */
+            text-decoration: none; /* Remove underline */
+        }
+
+        .dropdown a:hover {
+            background-color: #f0f0f0; /* Background color on hover */
+        }
+
+        /* Notification badge styles */
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -10px;
+            background-color: red; /* Red background for badge */
+            color: white; /* White text color */
+            border-radius: 50%; /* Make it round */
+            padding: 2px 5px; /* Padding for the badge */
+            font-size: 12px; /* Font size */
+        }
     </style>
+    <script>
+        // Function to toggle the dropdown
+        function toggleDropdown() {
+            const dropdown = document.getElementById('notificationDropdown');
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        }
+
+        // Close the dropdown if clicked outside
+        window.onclick = function(event) {
+            if (!event.target.matches('.fas.fa-bell')) {
+                const dropdowns = document.getElementsByClassName("dropdown");
+                for (let i = 0; i < dropdowns.length; i++) {
+                    dropdowns[i].style.display = "none";
+                }
+            }
+        }
+    </script>
 </head>
 <body>
     <!-- Vertical NavBar -->
@@ -77,11 +128,20 @@
 
         <div class="icons">
             <div class="icon">
-                <i class="fas fa-bell"></i>
-                <div class="dropdown">
-                    <a href="#">Notification 1</a>
-                    <a href="#">Notification 2</a>
-                    <a href="#">Notification 3</a>
+                <a href="{{ url_for('get_notifications') }}"> <!-- Link to the notifications page -->
+                    <i class="fas fa-bell" onclick="toggleDropdown()"></i>
+                    {% if notifications | length > 0 %}
+                        <span class="notification-badge">{{ notifications | length }}</span> <!-- Show notification count -->
+                    {% endif %}
+                </a>
+                <!-- Notification Dropdown -->
+                <div id="notificationDropdown" class="dropdown">
+                    {% for notification in notifications %}
+                    
+                        <a href="{{ url_for('get_contact', contact_id=notification[1]) }}">
+                            -  <!-- Message and date -->
+                        </a>
+                    {% endfor %}
                 </div>
             </div>
             <div class="icon">
@@ -104,7 +164,7 @@
         <div class="contacts-list">
             {% for contact in contacts %}
             <div class="contact">
-                <a href="{{ url_for('get_contact', contact_id=contact[0]) }}" style="flex-grow: 1; display: flex; align-items: center; text-decoration: none; color: inherit;"> <!-- Make the entire contact clickable -->
+                <a href="{{ url_for('get_contact', contact_id=contact[0]) }}" style="flex-grow: 1; display: flex; align-items: center; text-decoration: none; color: inherit;">
                     <div class="contact-initial">{{ contact[2][0]|upper }}</div>
                     <div class="contact-content" style="margin-left: 10px;">{{ contact[2] }}</div>
                 </a>

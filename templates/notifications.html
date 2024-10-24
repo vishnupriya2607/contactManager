@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Upcoming Important Dates</h1>
+        {% if upcoming_dates %}
+            <ul>
+                {% for date in upcoming_dates %}
+                    <li>
+                        <strong>Date:</strong> {{ date[3] }}<br>
+                        <strong>Note:</strong> {{ date[4] }}<br>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No upcoming important dates.</p>
+        {% endif %}
+    </div>
+
+    <script>
+        window.onload = function() {
+            // Check if there are upcoming dates
+            const notificationList = document.querySelector('ul');
+            if (notificationList && notificationList.children.length > 0) {
+                alert("You have upcoming important dates!");
+            }
+        };
+    </script>
+</body>
+</html>

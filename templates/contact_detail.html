@@ -82,8 +82,6 @@
             gap: 20px;
         }
 
-       
-
         .profile-details {
             display: flex;
             flex-direction: column;
@@ -124,21 +122,37 @@
             gap: 10px;
         }
 
-        .buttons button {
+        .buttons a {
             padding: 10px 20px;
             font-size: 16px;
             cursor: pointer;
-            background-color: #3498db;
-            color: white;
+            background-color: #477eec; /* Background color is now black */
+            color: white; /* White text */
             border: none;
             border-radius: 4px;
+            text-decoration: none; /* Remove underline */
+            transition: background-color 0.3s ease; /* Smooth transition for background */
         }
 
-        .buttons button:hover {
-            background-color: #2980b9;
+        .buttons a:hover {
+            background-color: #555; /* Darker shade on hover */
         }
 
-        .contact-details {
+        .profile-image {
+            display: inline-block; 
+            width: 80px; 
+            height: 80px;
+            background-color: #3498db; /* Background color for the circle */
+            color: white; /* Text color */
+            border-radius: 50%; /* Make it circular */
+            text-align: center; /* Center the text */
+            line-height: 80px; /* Vertically center the letter */
+            font-weight: bold; /* Make the letter bold */
+            margin-right: 10px; 
+            font-size:80px;
+        }
+
+        .important-date-form {
             margin-top: 20px;
             padding: 20px;
             background-color: white;
@@ -146,65 +160,38 @@
             border-radius: 8px;
         }
 
-        .contact-details h3 {
+        .important-date-form h3 {
             margin-bottom: 10px;
         }
 
-        .contact-details p {
-            margin: 5px 0;
-            color: #555;
+        .important-date-form input,
+        .important-date-form textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
         }
 
-        /* Update Icon Style */
-        .update-icon {
+        .important-date-form button {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
             cursor: pointer;
-            color: #3498db;
-            font-size: 20px;
         }
-        
-.buttons {
-    margin-bottom: 20px;
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-}
 
-.buttons a {
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
-    background-color: #477eec; /* Background color is now black */
-    color: white; /* White text */
-    border: none;
-    border-radius: 4px;
-    text-decoration: none; /* Remove underline */
-    transition: background-color 0.3s ease; /* Smooth transition for background */
-}
-
-.buttons a:hover {
-    background-color: #555; /* Darker shade on hover */
-}
-.profile-image {
-    display: inline-block; 
-    width: 80px; 
-    height: 80px;
-    background-color: #3498db; /* Background color for the circle */
-    color: white; /* Text color */
-    border-radius: 50%; /* Make it circular */
-    text-align: center; /* Center the text */
-    line-height: 80px; /* Vertically center the letter */
-    font-weight: bold; /* Make the letter bold */
-    margin-right: 10px; 
-    font-size:80px;
-}
-
+        .important-date-form button:hover {
+            background-color: #2980b9;
+        }
     </style>
 </head>
 <body>
 
     <!-- Vertical NavBar -->
     <div class="navbar">
-        <a href="/contacts/list"><i class="fas fa-address-book"></i> <br>Contacts</a> <!-- Updated href to /contacts -->
+        <a href="/contacts/list"><i class="fas fa-address-book"></i> <br>Contacts</a>
         <a href="#"><i class="fas fa-star"></i><br>Highlights </a>
         <a href="#"><i class="fas fa-cog"></i> <br>Organise</a>
     </div>
@@ -216,13 +203,10 @@
 
     <div class="container">
         <div class="profile-card">
-            <!-- Profile Image -->
             <div class="profile-image">
                 {{ contact[2][0] | upper }}  <!-- Display the first letter of the name -->
             </div>
-            <!-- Adjust the source with your image URL -->
 
-            <!-- Profile Details -->
             <div class="profile-details">
                 <h1>{{ contact[2] }} {{ contact[3] }} 
                     <a href="{{ url_for('update_contact', contact_id=contact[0]) }}" title="Edit" class="update-icon">
@@ -239,20 +223,29 @@
         <div class="contact">
             <div class="performance-card">
                 <h2>Contact Actions</h2>
-                
                 <div class="buttons">
                     <a href="{{ url_for('update_contact', contact_id=contact[0]) }}" class="btn">Update</a>
                     <a href="{{ url_for('view_groups') }}" class="btn">Group</a>
                 </div>
             </div>
-            
-            <!-- Contact Details -->
+
             <div class="contact-details">
                 <h3>Contact Details</h3>
-                <p><strong>WhatsApp Number:</strong> {{ contact[4] }}</p> <!-- Assuming contact[8] is WhatsApp number -->
-                <p><strong>Telegram ID:</strong> @vishnupriya</p> <!-- Replace with actual Telegram ID -->
-                <p><strong>LinkedIn ID:</strong> vishnupriyaramar</p> <!-- Replace with actual LinkedIn ID -->
+                <p><strong>WhatsApp Number:</strong> {{ contact[4] }}</p>
+                <p><strong>LinkedIn:</strong> {{ contact[5] }}</p>
+                <p><strong>Facebook:</strong> {{ contact[6] }}</p>
+                <p><strong>Twitter:</strong> {{ contact[7] }}</p>
             </div>
+        </div>
+
+        <!-- Form for adding important date -->
+        <div class="important-date-form">
+            <h3>Add Important Date</h3>
+            <form action="{{ url_for('add_important_date', contact_id=contact[0]) }}" method="POST">
+                <input type="date" name="important_date" required>
+                <textarea name="note" placeholder="Note about the date..." required></textarea>
+                <button type="submit">Add Date</button>
+            </form>
         </div>
     </div>
 </body>

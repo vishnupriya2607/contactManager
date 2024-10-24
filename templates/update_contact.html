@@ -99,6 +99,12 @@
                 <input type="email" name="email" value="{{ contact[5] }}" required><br>
                 <label>Address:</label>
                 <input type="text" name="address" value="{{ contact[6] }}"><br>
+                <!-- Blood Group Input -->
+
+    <label for="blood_group">Blood Group:</label>
+    <input type="text" id="blood_group" name="blood_group" value="{{ contact[13] }}">
+
+
                 <input type="text" name="group_name" value="{{contact[10]}}">
                 <label>Favorite:</label>
                 <input type="checkbox" name="is_favorite" {% if contact[7] %}checked{% endif %}><br>
