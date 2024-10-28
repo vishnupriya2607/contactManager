@@ -3,10 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Add this in the <head> section of your HTML -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
     <title>Create Contact</title>
     <style>
         * {
-            margin: 0;
+            margin: 0px;
             padding: 0;
             box-sizing: border-box;
         }
@@ -27,6 +30,7 @@
             background-color: white; /* Background for the container */
             border-radius: 8px; /* Rounded corners */
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+            height:650px;
         }
 
         .image-section {
@@ -39,7 +43,8 @@
 
         .form-section {
             flex: 1; /* Allow this section to take available space */
-            padding: 20px; /* Spacing inside the form */
+            padding: 10px; 
+            height:10px;/* Spacing inside the form */
         }
 
         h2 {
@@ -59,7 +64,7 @@
             padding: 10px; /* Padding inside the inputs */
             border: 1px solid #ccc; /* Light border */
             border-radius: 5px; /* Rounded corners */
-            margin-bottom: 15px; /* Spacing between inputs */
+            margin-bottom: 2px; /* Spacing between inputs */
             font-size: 16px; /* Font size for inputs */
         }
 
@@ -81,9 +86,20 @@
         button:hover {
             background-color: #0056b3; /* Darker shade on hover */
         }
+        .back-arrow {
+    position: fixed; /* Use fixed to keep it in the corner even when scrolling */
+    top: 0;          /* Aligns it to the top */
+    left: 0;         /* Aligns it to the left */
+    margin: 10px;    /* Optional: add some margin for spacing */
+    z-index: 1000;   /* Optional: ensure it stays above other elements */
+}
+
     </style>
 </head>
 <body>
+    <a href="{{ url_for('get_contacts') }}" class="back-arrow">
+        <i class="fas fa-arrow-left"></i>Back
+    </a>
     <div class="container">
         <div class="image-section"></div>
         <div class="form-section">

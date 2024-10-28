@@ -17,33 +17,33 @@
             font-family: Arial, sans-serif;
         }
 
-        /* Vertical NavBar */
         .navbar {
-            width: 200px;
-            height: 100vh;
+            width: 230px;
+            height: 170vh;
             background-color: #2c3e50;
             position: fixed;
             top: 0;
             left: 0;
             display: flex;
             flex-direction: column;
-            padding-top: 20px;
+            
+           
         }
-
         .navbar a {
             padding: 15px;
             text-decoration: none;
             color: white;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 5px;
             position: relative;
             background-color: #34495e;
-            margin: 10px 0;
+            top:50px;
+            margin: 40px 0px ;
             transition: background-color 0.3s, transform 0.3s;
             border-left: 5px solid transparent;
-            border-right: 20px solid transparent; /* Creates the slant bevel */
         }
+
 
         .navbar a:hover {
             background-color: #2980b9;
@@ -56,8 +56,8 @@
 
         /* Header */
         .header {
-            margin-left: 200px;
-            height: 60px;
+            margin-left: 250px;
+            height: 90px;
             background-color: #ecf0f1;
             display: flex;
             align-items: center;
@@ -67,29 +67,57 @@
         }
 
         .container {
-            margin-left: 200px;
+            margin-left: 250px;
             padding: 20px;
             padding-top: 80px;
         }
 
-        .profile-card {
+        /* Profile Section - Blue Background */
+        .profile-section {
+            background-color:#2c3e50; /* Dark blue color */
+            color: white;
+            padding: 40px 20px;
             display: flex;
             align-items: center;
+            justify-content: center;
+            position:inherit;
+        }
+
+        .profile-card {
+            display: flex;
+            align-items:center ;
             background-color: white;
             padding: 20px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
+            
             gap: 20px;
+            color: black;
+            position:relative;
+            top:40px;
+            left:30px;
+            margin-left:90px;
+            border-top-left-radius:58px;
+            border-top-right-radius:58px;
+            box-shadow:#2c3e50;
         }
-
-        .profile-details {
-            display: flex;
-            flex-direction: column;
-        }
+        .profile-image {
+    display: inline-block; 
+    width: 100px; /* Larger size */
+    height: 100px;
+    background-color: #3498db;
+    color: white;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 100px;
+    font-weight: bold;
+    margin-right: 10px;
+    font-size: 80px;
+}
 
         .profile-details h1 {
             margin: 0;
             font-size: 24px;
+            color: black;
         }
 
         .profile-details p {
@@ -97,28 +125,30 @@
             color: #555;
         }
 
-        .contact {
+        
+        /* Two-column layout for contact actions and form */
+        .lower-container {
+            display: flex;
+            gap: 30px;
             margin-top: 20px;
         }
 
-        .performance-card {
-            display: flex;
-            justify-content: space-between;
-            padding: 20px;
+        .left-container, .right-container {
             background-color: white;
+            padding: 20px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
-            margin-bottom: 10px;
+            flex: 1;
         }
 
-        .performance-card h2 {
-            margin: 0;
+        .left-container {
+            flex: 2; /* Make the left container larger */
         }
 
         .buttons {
-            margin-bottom: 20px;
+            margin-top: 20px;
             display: flex;
-            justify-content: flex-end;
+            justify-content: flex-start;
             gap: 10px;
         }
 
@@ -126,7 +156,7 @@
             padding: 10px 20px;
             font-size: 16px;
             cursor: pointer;
-            background-color: #477eec; /* Background color is now black */
+            background-color: #477eec; /* Background color */
             color: white; /* White text */
             border: none;
             border-radius: 4px;
@@ -138,26 +168,8 @@
             background-color: #555; /* Darker shade on hover */
         }
 
-        .profile-image {
-            display: inline-block; 
-            width: 80px; 
-            height: 80px;
-            background-color: #3498db; /* Background color for the circle */
-            color: white; /* Text color */
-            border-radius: 50%; /* Make it circular */
-            text-align: center; /* Center the text */
-            line-height: 80px; /* Vertically center the letter */
-            font-weight: bold; /* Make the letter bold */
-            margin-right: 10px; 
-            font-size:80px;
-        }
-
         .important-date-form {
             margin-top: 20px;
-            padding: 20px;
-            background-color: white;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
         }
 
         .important-date-form h3 {
@@ -192,7 +204,7 @@
     <!-- Vertical NavBar -->
     <div class="navbar">
         <a href="/contacts/list"><i class="fas fa-address-book"></i> <br>Contacts</a>
-        <a href="#"><i class="fas fa-star"></i><br>Highlights </a>
+        <a href="{{url_for('view_favorites')}}"><i class="fas fa-star"></i><br>Highlights </a>
         <a href="#"><i class="fas fa-cog"></i> <br>Organise</a>
     </div>
 
@@ -201,52 +213,62 @@
         <h1>Contact Detail</h1>
     </div>
 
-    <div class="container">
-        <div class="profile-card">
-            <div class="profile-image">
-                {{ contact[2][0] | upper }}  <!-- Display the first letter of the name -->
-            </div>
-
-            <div class="profile-details">
-                <h1>{{ contact[2] }} {{ contact[3] }} 
-                    <a href="{{ url_for('update_contact', contact_id=contact[0]) }}" title="Edit" class="update-icon">
-                        <i class="fas fa-edit"></i>
-                    </a>
-                </h1>
-                <p><strong>Phone Number:</strong> {{ contact[4] }}</p>
-                <p><strong>Email:</strong> {{ contact[5] }}</p>
-                <p><strong>Address:</strong> {{ contact[6] }}</p>
-                <p><strong>Favorite:</strong> {% if contact[7] == 1 %} Yes {% else %} No {% endif %}</p>
+    <!-- Profile Section in Blue Background -->
+    <div class="profile-section">
+        <div class="blue-background">
+            <div class="profile-card">
+                <div class="profile-image">
+                    {{ contact[2][0] | upper }}
+                </div>
+        
+                <div class="profile-details">
+                    <h1>{{ contact[2] }} {{ contact[3] }} 
+                        <a href="{{ url_for('update_contact', contact_id=contact[0]) }}" title="Edit" class="update-icon">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                    </h1>
+                    <p><strong>Phone Number:</strong> {{ contact[4] }}</p>
+                    <p><strong>Email:</strong> {{ contact[5] }}</p>
+                    <p><strong>Address:</strong> {{ contact[6] }}</p>
+                    <p><strong>Favorite:</strong> {% if contact[7] == 1 %} Yes {% else %} No {% endif %}</p>
+                </div>
             </div>
         </div>
+        
+    </div>
 
-        <div class="contact">
-            <div class="performance-card">
-                <h2>Contact Actions</h2>
+    <!-- Contact Details and Actions (Left) and Add Date Form (Right) -->
+    <div class="container">
+        <div class="lower-container">
+            <!-- Left Container for Contact Details -->
+            <div class="left-container">
+                <div class="contact-details">
+                    <h3>Contact Details</h3><br>
+                    <p><strong>WhatsApp Number :</strong>9394594943</p><br>
+                    <p><strong>LinkedIn        :</strong> thesegaps</p><br>
+                    <p><strong>Facebook        :</strong>@thesega</p><br>
+                    <p><strong>Twitter         :</strong>_thesegaps</p><br>
+                </div>
+
                 <div class="buttons">
                     <a href="{{ url_for('update_contact', contact_id=contact[0]) }}" class="btn">Update</a>
                     <a href="{{ url_for('view_groups') }}" class="btn">Group</a>
                 </div>
             </div>
 
-            <div class="contact-details">
-                <h3>Contact Details</h3>
-                <p><strong>WhatsApp Number:</strong> {{ contact[4] }}</p>
-                <p><strong>LinkedIn:</strong> {{ contact[5] }}</p>
-                <p><strong>Facebook:</strong> {{ contact[6] }}</p>
-                <p><strong>Twitter:</strong> {{ contact[7] }}</p>
+            <!-- Right Container for Important Date Form -->
+            <div class="right-container">
+                <div class="important-date-form">
+                    <h3>Add Important Date</h3>
+                    <form action="{{ url_for('add_important_date', contact_id=contact[0]) }}" method="POST">
+                        <input type="date" name="important_date" required>
+                        <textarea name="note" placeholder="Note about the date..." required></textarea>
+                        <button type="submit">Add Date</button>
+                    </form>
+                </div>
             </div>
         </div>
-
-        <!-- Form for adding important date -->
-        <div class="important-date-form">
-            <h3>Add Important Date</h3>
-            <form action="{{ url_for('add_important_date', contact_id=contact[0]) }}" method="POST">
-                <input type="date" name="important_date" required>
-                <textarea name="note" placeholder="Note about the date..." required></textarea>
-                <button type="submit">Add Date</button>
-            </form>
-        </div>
     </div>
+
 </body>
 </html>

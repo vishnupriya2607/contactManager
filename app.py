@@ -63,15 +63,32 @@ def create_contact():
         return redirect(url_for('signin'))
 
     if request.method == 'POST':
+        first_name = request.form['first_name']
+        last_name = request.form['last_name']
+        phone_number = request.form['phone_number']
+        email = request.form['email']
+        address = request.form['address']
         is_favorite = 1 if request.form.get('is_favorite') == 'on' else 0
         group_name = request.form.get('group_name')
-        blood_group = request.form.get('blood_group')  # Get the blood group from form input
+        blood_group = request.form.get('blood_group')
+
         cursor = mysql.connection.cursor()
+        
+        # Check if a contact with the same name and phone number already exists
+        cursor.execute('''SELECT * FROM contact WHERE first_name = %s OR last_name = %s OR phone_number = %s''',
+                       (first_name, last_name, phone_number))
+        existing_contact = cursor.fetchone()
+
+        if existing_contact:
+            # Contact with the same name and phone number already exists
+            cursor.close()
+            error_message = "A contact with the same name and phone number already exists."
+            return render_template('create_contact.html', error_message=error_message)
+        
+        # Insert the new contact
         cursor.execute('''INSERT INTO contact (user_id, first_name, last_name, phone_number, email, address, is_favorite, group_name, blood_group)
                           VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)''',
-                       (session['user_id'], request.form['first_name'], request.form['last_name'],
-                        request.form['phone_number'], request.form['email'],
-                        request.form['address'], is_favorite, group_name, blood_group))
+                       (session['user_id'], first_name, last_name, phone_number, email, address, is_favorite, group_name, blood_group))
         mysql.connection.commit()
         cursor.close()
         return redirect(url_for('get_contacts'))
@@ -216,9 +233,6 @@ def delete_contact(contact_id):
     cursor.close()
 
     return redirect(url_for('get_contacts'))
-
-# Search contacts by name or phone number
-# Search contacts by name, phone number, or blood group
 @app.route('/contacts/search', methods=['GET'])
 def search_contacts():
     if not is_logged_in():
@@ -226,33 +240,40 @@ def search_contacts():
 
     query = request.args.get('query', '')
     filter_type = request.args.get('filter', 'name')
-    
+
     cursor = mysql.connection.cursor()
 
+    # Fetch contacts based on filter type
     if filter_type == 'name':
         cursor.execute('''SELECT * FROM contact WHERE user_id = %s AND 
                           (first_name LIKE %s OR last_name LIKE %s)''',
                        (session['user_id'], f'%{query}%', f'%{query}%'))
     elif filter_type == 'blood_group':
         cursor.execute('''SELECT * FROM contact WHERE user_id = %s AND 
-                          blood_group LIKE %s''',
-                       (session['user_id'], f'%{query}%'))
+                          blood_group = %s''',
+                       (session['user_id'], query))
     elif filter_type == 'place':
         cursor.execute('''SELECT * FROM contact WHERE user_id = %s AND 
                           address LIKE %s''',
                        (session['user_id'], f'%{query}%'))
     else:
-        # Default case: Search by name
-        cursor.execute('''SELECT * FROM contact WHERE user_id = %s AND 
-                          (first_name LIKE %s OR last_name LIKE %s)''',
-                       (session['user_id'], f'%{query}%', f'%{query}%'))
+        cursor.execute('SELECT * FROM contact WHERE user_id = %s', (session['user_id'],))
 
+    # Fetch all matching contacts
     contacts = cursor.fetchall()
+
+    # Fetch upcoming important dates within the next 7 days
+    cursor.execute('''SELECT * FROM important_dates 
+                      WHERE user_id = %s AND important_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 7 DAY)''', 
+                   (session['user_id'],))
+    upcoming_dates = cursor.fetchall()
+    
     cursor.close()
 
-    return render_template('contact_list.html', contacts=contacts)
+    # Render the contact_list template with contacts and notifications
+    return render_template('contact_list.html', contacts=contacts, notifications=upcoming_dates)
 
-# View groups route
+
 @app.route('/groups')
 def view_groups():
     if not is_logged_in():
@@ -283,7 +304,19 @@ def create_group():
     cursor.close()
 
     return redirect(url_for('view_groups'))
+@app.route('/contacts/favorites')
+def view_favorites():
+    if not is_logged_in():
+        return redirect(url_for('signin'))
 
+    cursor = mysql.connection.cursor()
+    cursor.execute('''SELECT * FROM contact 
+                      WHERE user_id = %s AND is_favorite = 1''', 
+                   (session['user_id'],))
+    favorite_contacts = cursor.fetchall()
+    cursor.close()
+
+    return render_template('favorites.html', contacts=favorite_contacts)
 # Assign contacts to a group
 @app.route('/groups/assign/<string:group_name>', methods=['GET', 'POST'])
 def assign_contacts(group_name):
@@ -357,6 +390,20 @@ def logout():
         cursor.close()
     
     return redirect(url_for('signin'))
+@app.route('/contacts/remove_favorite/<int:contact_id>', methods=['POST'])
+def remove_favorite(contact_id):
+    if not is_logged_in():
+        return redirect(url_for('signin'))
+
+    cursor = mysql.connection.cursor()
+    cursor.execute('''UPDATE contact 
+                      SET is_favorite = 0 
+                      WHERE contact_id = %s AND user_id = %s''', 
+                   (contact_id, session['user_id']))
+    mysql.connection.commit()
+    cursor.close()
+
+    return redirect(url_for('view_favorites'))
 
 if __name__ == '__main__':
     app.run(debug=True)

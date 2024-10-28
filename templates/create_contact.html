@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Add this in the <head> section of your HTML -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
     <title>Create Contact</title>
     <style>
         * {
@@ -27,6 +30,7 @@
             background-color: white; /* Background for the container */
             border-radius: 8px; /* Rounded corners */
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+            
         }
 
         .image-section {
@@ -39,7 +43,8 @@
 
         .form-section {
             flex: 1; /* Allow this section to take available space */
-            padding: 20px; /* Spacing inside the form */
+            padding: 5px; /* Spacing inside the form */
+            /* height:10px; */
         }
 
         h2 {
@@ -56,7 +61,7 @@
         input[type="text"],
         input[type="email"] {
             width: 100%; /* Full width for inputs */
-            padding: 10px; /* Padding inside the inputs */
+            padding: 5px; /* Padding inside the inputs */
             border: 1px solid #ccc; /* Light border */
             border-radius: 5px; /* Rounded corners */
             margin-bottom: 15px; /* Spacing between inputs */
@@ -65,6 +70,10 @@
 
         input[type="checkbox"] {
             margin-left: 5px; /* Space to the left of the checkbox */
+        }
+        .error {
+            color: red;
+            margin-bottom: 10px;
         }
 
         button {
@@ -81,14 +90,29 @@
         button:hover {
             background-color: #0056b3; /* Darker shade on hover */
         }
+        .back-arrow {
+    position: fixed; /* Use fixed to keep it in the corner even when scrolling */
+    top: 0;          /* Aligns it to the top */
+    left: 0;         /* Aligns it to the left */
+    margin: 10px;    /* Optional: add some margin for spacing */
+    z-index: 1000;   /* Optional: ensure it stays above other elements */
+}
+
     </style>
 </head>
 <body>
+    <a href="{{ url_for('get_contacts') }}" class="back-arrow">
+        <i class="fas fa-arrow-left"></i>Back
+    </a>
+    
     <div class="container">
         <div class="image-section"></div>
         <div class="form-section">
+            
             <h2>Create Contact</h2>
+            
             <form action="/contacts" method="POST">
+                
                 <label>First Name:</label>
                 <input type="text" name="first_name" required>
                 <label>Last Name:</label>
@@ -100,10 +124,17 @@
                 <label>Address:</label>
                 <input type="text" name="address">
                 <input type="text" name="group_name" placeholder="Group Name (optional)">
+                <label for="blood_group">Blood Group:</label>
+                <input type="text"name="blood_group" >
                 <label>Favorite:</label>
                 <input type="checkbox" name="is_favorite"><br>
                 <button type="submit">Create</button>
             </form>
+            {% if error_message %}
+            <script>
+                alert("{{ error_message }}");
+            </script>
+    {% endif %}
         </div>
     </div>
 </body>

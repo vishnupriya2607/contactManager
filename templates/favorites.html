@@ -42,10 +42,11 @@
             transition: background-color 0.3s, transform 0.3s;
             border-left: 5px solid transparent;
         }
+        
 
         .container {
             margin-left: 220px;
-            padding: 20px;
+            padding: 30px;
             padding-top: 80px;
         }
 
@@ -76,7 +77,7 @@
         form input {
             padding: 10px;
             font-size: 16px;
-            width: 250px;
+            width: 200px;
         }
 
         form button {
@@ -140,32 +141,33 @@
 
     <!-- Vertical NavBar -->
     <div class="navbar">
-        <a href="/contacts/list"><i class="fas fa-address-book"></i> Contacts</a>
-        <a href="{{url_for('view_favorites')}}"><i class="fas fa-star"></i> Highlights</a>
-        <a href="#"><i class="fas fa-cog"></i> Organize</a>
+        <a href="{{url_for('get_contacts')}}"><i class="fas fa-address-book"></i> Contacts</a>
+        <a href="#"><i class="fas fa-star"></i> Highlights</a>
+        <a href="#"><i class="fas fa-cog"></i> Organise</a>
     </div>
 
     <!-- Main Container -->
     <div class="container">
-        <h2>Existing Groups</h2>
-
-        
-        <form action="{{ url_for('create_group') }}" method="POST">
-            <input type="text" name="group_name" placeholder="Group Name" required>
-            <button type="submit">Create Group</button>
-        </form>
-
-        <ul>
-            {% for group in groups %}
-                <li>
-                    <a href="{{ url_for('view_contacts', group_name=group[0]) }}">{{ group[0] }}</a>
-                    <a href="{{ url_for('assign_contacts', group_name=group[0]) }}" class="assign-btn">Assign Contacts</a>
-                </li>
-            {% else %}
-                <li>No groups available.</li>
-            {% endfor %}
-        </ul>
+    <h1>Favorite Contacts</h1>
+    <div class="contacts-list">
+        {% for contact in contacts %}
+            <div class="contact">
+                <a href="{{ url_for('view_favorites', contact_id=contact[0]) }}" style="flex-grow: 1; display: flex; align-items: center; text-decoration: none; color: inherit;">
+                    <div class="contact-initial">{{ contact[2][0]|upper }}</div>
+                    <div class="contact-content" style="margin-left: 10px;">{{ contact[2] }}</div>
+                </a>
+    
+                <div class="contact-actions">
+                    <form action="{{ url_for('remove_favorite', contact_id=contact[0]) }}" method="POST" style="display: inline;">
+                        <button type="submit" title="Remove from Favorites" onclick="return confirm('Are you sure you want to remove this contact from favorites?');">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        {% endfor %}
     </div>
-
+    </div>
+</div>
 </body>
 </html>

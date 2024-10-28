@@ -11,14 +11,19 @@
 :root {
     --primary-color: #007bff;
     --hover-color: #0056b3;
-    --light-bg: #f0f0f0;
+    --light-bg: #ccc;
     --text-color: black;
     --border-color: #ccc;
+}
+.header
+{
+    height:90px;
+  
 }
 
 /* Container for Contacts List */
 .contacts-list {
-    margin-top: 20px;
+    margin-top: 30px;
     max-height: 400px; /* Limit height for scrolling */
     overflow-y: auto; /* Enable vertical scrolling */
 }
@@ -35,6 +40,8 @@
     text-decoration: none; /* Remove underline */
     color: var(--text-color); /* Default text color */
     transition: background-color 0.3s, transform 0.2s; /* Smooth transitions */
+    max-width: 1600px;
+    margin-left:50px;
 }
 
 .contact:hover {
@@ -69,59 +76,108 @@
 .contact-actions a:hover {
     color: var(--primary-color); /* Change color on hover */
 }
+/* Root Variables for Consistent Color Palette */
+:root {
+    --primary-color: #007bff;
+    --hover-color: #0056b3;
+    --light-bg: #f0f0f0;
+    --text-color: black;
+    --border-color: #ccc;
+}
 
-/* Search Bar Styles */
+/* Remove the black background from the search container */
 .search-wrapper {
-    display: flex; /* Flexbox layout */
-    align-items: center; /* Center items vertically */
-    margin-bottom: 20px; /* Space below the search bar */
+    display: flex;
+    align-items: center;
+    margin: 350px;
+    margin-bottom:330px;
+    justify-content: center; /* Centers the entire search bar */
 }
 
 .search-bar {
-    display: flex; /* Flex layout for search bar */
-    align-items: center; /* Center items vertically */
-    border: 1px solid var(--border-color); /* Border around the search bar */
-    border-radius: 5px; /* Rounded corners */
-    overflow: hidden; /* Prevent overflow */
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    width: 100%; /* Let the search bar take up the container's width */
+    max-width: 900px; /* Optional: Set a max-width to control the size */
+    padding: 5px;
+    background-color: white; /* Ensure consistent background */
 }
 
 .search-bar select {
-    padding: 10px; /* Padding inside the dropdown */
-    border: none; /* Remove border */
-    background-color: #f9f9f9; /* Background color */
-    cursor: pointer; /* Pointer cursor on hover */
+    padding: 10px;
+    border: none;
+    background-color: white; /* Match the background color */
+    cursor: pointer;
+    width: 200px; /* Control the width */
 }
 
 .search-bar select:hover {
-    background-color: #e6e6e6; /* Background color on hover */
+    background-color: #f9f9f9;
 }
 
 .search-bar input[type="text"] {
-    padding: 10px; /* Padding inside the input */
-    border: none; /* Remove border */
-    flex: 1; /* Allow input to grow */
-    font-size: 16px; /* Font size */
+    padding: 10px;
+    border: none;
+    flex: 1;
+    font-size: 16px;
+    margin-left: 10px; /* Adds space between dropdown and input */
 }
 
 .search-bar input[type="text"]:focus {
-    outline: none; /* Remove outline on focus */
-    border-bottom: 2px solid var(--primary-color); /* Bottom border on focus */
+    outline: none;
+    border-bottom: 2px solid var(--primary-color);
 }
 
 .search-bar button {
-    padding: 10px 15px; /* Padding for button */
-    background-color: var(--primary-color); /* Button color */
-    color: white; /* Text color */
-    border: none; /* Remove border */
-    cursor: pointer; /* Pointer cursor on hover */
-    transition: background-color 0.3s; /* Transition effect */
+    padding: 10px 15px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    border-radius: 8px; 
+    width:100px;
+    margin-left: 10px; /* Adds space between input and button */
 }
 
 .search-bar button:hover {
-    background-color: var(--hover-color); /* Darker shade on hover */
+    background-color: var(--hover-color);
 }
 
+/* Remove any background color that might be affecting search layout */
+.search-bar {
+    background-color: transparent;
+    box-shadow: none;
+}
+.navbar {
+            width: 230px;
+            height: 150vh;
+            background-color: #2c3e50;
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+           
+        }
+        .navbar a {
+            padding: 15px;
+            text-decoration: none;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            position: relative;
+            background-color: #34495e;
+            margin: 40px 0;
+            transition: background-color 0.3s, transform 0.3s;
+            border-left: 5px solid transparent;
+        }
 /* Dropdown Styles */
+
+
 .dropdown {
     display: none; /* Hide by default */
     position: absolute; /* Position it below the icon */
@@ -154,6 +210,11 @@
     padding: 2px 5px; /* Padding for the badge */
     font-size: 12px; /* Font size */
 }
+.btn
+{
+    width:100px;
+    text-align: center;
+}
 </style>
     <script>
         // Function to toggle the dropdown for notifications
@@ -182,25 +243,28 @@
 <body>
     <!-- Vertical NavBar -->
     <div class="navbar">
-        <br><br>
-        <a href="#"><i class="fas fa-address-book"></i> <br>Contacts</a>
-        <a href="#"><i class="fas fa-star"></i><br>Highlights</a>
-        <a href="#"><i class="fas fa-cog"></i> <br>Organize</a>
+       
+        <a href="#"><i class="fas fa-address-book"></i>Contacts</a>
+        <a href="{{url_for('view_favorites')}}"><i class="fas fa-star"></i>Highlights</a>
+        <a href="#"><i class="fas fa-cog"></i>Organize</a>
     </div>
 
     <!-- Header -->
     <div class="header">
         <div class="search-wrapper">
-             <form action="{{ url_for('search_contacts') }}" method="get"  class="search-bar">
-        <select name="filter">
-            <option value="name" {% if request.args.get('filter') == 'name' %}selected{% endif %}>Search by Name</option>
-            <option value="blood_group" {% if request.args.get('filter') == 'blood_group' %}selected{% endif %}>Search by Blood Group</option>
-            <option value="place" {% if request.args.get('filter') == 'place' %}selected{% endif %}>Search by Place</option>
-        </select>
-        <input type="text" name="query" placeholder="Enter your search term..." value="{{ request.args.get('query', '') }}" required>
-        <button type="submit">Search</button>
-    </form>
+            <form action="{{ url_for('search_contacts') }}" method="get" class="search-bar" id="searchForm">
+                <select name="filter">
+                    <option value="name" {% if request.args.get('filter') == 'name' %}selected{% endif %}>Search by Name</option>
+                    <option value="blood_group" {% if request.args.get('filter') == 'blood_group' %}selected{% endif %}>Search by Blood Group</option>
+                    <option value="place" {% if request.args.get('filter') == 'place' %}selected{% endif %}>Search by Place</option>
+                </select>
+                <input type="text" name="query" placeholder="Enter your search term..." value="{{ request.args.get('query', '') }}" required>
+               
+                <!-- Clear Button -->
+                <button type="button" onclick="clearSearch()">Clear</button>
+            </form>
         </div>
+        
 
         <div class="icons">
             <div class="icon">
@@ -256,6 +320,13 @@
             {% endfor %}
         </div>
     </div>
-    
+    <script>
+    function clearSearch() {
+        // Reset the form by clearing input values
+        document.getElementById('searchForm').reset();
+        // Redirect to the page without search query to display all contacts
+        window.location.href = "{{ url_for('search_contacts') }}";
+    }
+</script>
 </body>
 </html>
