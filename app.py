@@ -1,15 +1,16 @@
+import os
 from flask import Flask, request, jsonify, session, render_template, redirect, url_for
 from flask_mysqldb import MySQL
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 
-# MySQL database connection configuration
-app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'Speed@2607'
-app.config['MYSQL_DB'] = 'contactdb'
-app.secret_key = 'Speed@2607'
+# Fetch configuration from environment variables
+app.config['MYSQL_HOST'] = os.getenv('MYSQL_HOST', 'localhost')
+app.config['MYSQL_USER'] = os.getenv('MYSQL_USER', 'root')
+app.config['MYSQL_PASSWORD'] = os.getenv('MYSQL_PASSWORD', 'Speed@2607')
+app.config['MYSQL_DB'] = os.getenv('MYSQL_DB', 'contactdb')
+app.secret_key = os.getenv('SECRET_KEY', 'Speed@2607')
 
 mysql = MySQL(app)
 
@@ -18,7 +19,7 @@ def is_logged_in():
     return 'user_id' in session
 
 # Signup route
-@app.route('/signup', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
         username = request.form['username']
@@ -406,4 +407,6 @@ def remove_favorite(contact_id):
     return redirect(url_for('view_favorites'))
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))  # Use PORT environment variable or default to 5000
+    app.run(host='0.0.0.0', port=port)
+    
