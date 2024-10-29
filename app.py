@@ -2,7 +2,6 @@ import os
 from flask import Flask, request, jsonify, session, render_template, redirect, url_for
 from flask_mysqldb import MySQL
 from werkzeug.security import generate_password_hash, check_password_hash
-from waitress import serve
 app = Flask(__name__)
 
 # Fetch configuration from environment variables
