@@ -210,7 +210,15 @@
                     <p><strong>Phone Number:</strong> {{ contact[4] }}<br>
                     <strong>Email:</strong> {{ contact[5] }}<br>
                     <strong>Address:</strong> {{ contact[6] }}<br>
-                    <strong>Favorite:</strong> {% if contact[7] == 1 %} Yes {% else %} No {% endif %}</p>
+                    <strong>Favorite:</strong> 
+                    {% if contact[7] == 1 %}
+                        <i class="fa fa-heart" style="color: red;" onclick="toggleFavorite(contact[0], 0, this)"></i>
+                    {% else %}
+                        <i class="fa fa-heart-o" style="color: grey;" onclick="toggleFavorite(contact[0], 1, this)"></i>
+                    {% endif %}
+                    
+                    
+
                 </div>
             </div>
         </div>

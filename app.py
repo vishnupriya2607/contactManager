@@ -1,22 +1,82 @@
 import os
-from flask import Flask, request, jsonify, session, render_template, redirect, url_for
+from datetime import timedelta,datetime
+from flask import Flask, request, jsonify, session, render_template, redirect, url_for,flash
 from flask_mysqldb import MySQL
 from werkzeug.security import generate_password_hash, check_password_hash
-from waitress import serve
 app = Flask(__name__)
+app.config['MYSQL_HOST'] = os.getenv('MYSQL_HOST', '127.0.0.1')
 
-# Fetch configuration from environment variables
-app.config['MYSQL_HOST'] = os.getenv('MYSQL_HOST', 'localhost')
 app.config['MYSQL_USER'] = os.getenv('MYSQL_USER', 'root')
 app.config['MYSQL_PASSWORD'] = os.getenv('MYSQL_PASSWORD', 'Speed@2607')
 app.config['MYSQL_DB'] = os.getenv('MYSQL_DB', 'contactdb')
+app.config['MYSQL_PORT'] = 3306 
 app.secret_key = os.getenv('SECRET_KEY', 'Speed@2607')
+
 
 mysql = MySQL(app)
 
 # Middleware to check if logged in
+# Middleware to check if logged in and session expiry
 def is_logged_in():
-    return 'user_id' in session
+    # Check if user_id exists in session
+    if 'user_id' not in session:
+        return False
+
+    # Check if the session has expired (24-hour check)
+    login_time = session.get('login_time')
+    if login_time:
+        login_time = datetime.strptime(login_time, '%Y-%m-%d %H:%M:%S')
+        if datetime.now() > login_time + timedelta(hours=24):
+            # If 24 hours have passed, clear the session and return False
+            session.clear()
+            return False
+
+    return True
+
+
+
+@app.route('/forgot-password', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'POST':
+        identifier = request.form['identifier']
+        new_password = request.form['new_password']
+
+        # Hash the new password for security
+        hashed_password = generate_password_hash(new_password)
+
+        # Update the password in the signup table based on email or username
+        cursor = mysql.connection.cursor()
+        query = '''UPDATE signup 
+                   SET password = %s 
+                   WHERE email = %s OR username = %s'''
+        cursor.execute(query, (hashed_password, identifier, identifier))
+        mysql.connection.commit()
+        cursor.close()
+
+        flash("Your password has been successfully updated!", "success")
+        return redirect(url_for('forgot_password'))  # Redirect to display the success message
+
+    return render_template('forgot_password.html')
+
+# Login route
+@app.route('/signin', methods=['GET', 'POST'])
+def signin():
+    if request.method == 'POST':
+        identifier = request.form['identifier']  # Email or username
+        password = request.form['password']
+
+        cursor = mysql.connection.cursor()
+        cursor.execute('''SELECT * FROM signup WHERE email = %s OR username = %s''', (identifier, identifier))
+        user = cursor.fetchone()
+        cursor.close()
+
+        if user and check_password_hash(user[3], password):
+            session['user_id'] = user[0]
+            return redirect(url_for('get_contacts'))
+        else:
+            return render_template('signin.html', error="Invalid email/username or password")
+
+    return render_template('signin.html')
 
 # Signup route
 @app.route('/', methods=['GET', 'POST'])
@@ -36,26 +96,23 @@ def signup():
     return render_template('signup.html')
 
 
+# Get notifications for upcoming important dates
+@app.route('/notifications')
+def get_notifications():
+    if not is_logged_in():
+        return redirect(url_for('signin'))
 
+    # Fetch the upcoming important dates from the database
+    cursor = mysql.connection.cursor()
+    cursor.execute('''SELECT * FROM important_dates 
+                      WHERE user_id = %s AND important_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 7 DAY)''',
+                   (session['user_id'],))
+    upcoming_dates = cursor.fetchall()
+    cursor.close()
 
-@app.route('/signin', methods=['GET', 'POST'])
-def signin():
-    if request.method == 'POST':
-        identifier = request.form['identifier']  # Email or username
-        password = request.form['password']
+    # Render the template with the upcoming important dates
+    return render_template('notifications.html', notifications=upcoming_dates)
 
-        cursor = mysql.connection.cursor()
-        cursor.execute('''SELECT * FROM signup WHERE email = %s OR username = %s''', (identifier, identifier))
-        user = cursor.fetchone()
-        cursor.close()
-
-        if user and check_password_hash(user[3], password):
-            session['user_id'] = user[0]
-            return redirect(url_for('get_contacts'))
-        else:
-            return render_template('signin.html', error="Invalid email/username or password")
-
-    return render_template('signin.html')
 
 # Create contact route
 @app.route('/contacts', methods=['GET', 'POST'])
@@ -95,8 +152,6 @@ def create_contact():
         return redirect(url_for('get_contacts'))
 
     return render_template('create_contact.html')
-
-
 # Add important date to contact
 @app.route('/contacts/<int:contact_id>/add_important_date', methods=['POST'])
 def add_important_date(contact_id):
@@ -117,47 +172,55 @@ def add_important_date(contact_id):
 
 # Get notifications for upcoming important dates
 
-
+# Delete outdated important dates
+@app.before_request
+def delete_outdated_dates():
+    cursor = mysql.connection.cursor()
+    cursor.execute('DELETE FROM important_dates WHERE important_date < CURDATE()')
+    mysql.connection.commit()
+    cursor.close()
 @app.route('/notification/<int:notification_id>')
 def view_notification(notification_id):
     if not is_logged_in():
         return redirect(url_for('signin'))
     
     cursor = mysql.connection.cursor()
-    
-    # Fetch the specific notification details
-    cursor.execute('''SELECT * FROM important_dates 
-                      WHERE id = %s AND user_id = %s''', 
-                   (notification_id, session['user_id']))
-    notification = cursor.fetchone()
-    print(notification)
-    if notification:
-        # Mark the notification as seen
-        cursor.execute('''UPDATE important_dates 
-                          SET seen = 1 
-                          WHERE id = %s AND user_id = %s''', 
-                       (notification_id, session['user_id']))
-        mysql.connection.commit()  # Commit the changes to the database
-    
-    cursor.close()
-    
-    if notification:
-        # Render a template to show the details of the specific notification
-        return render_template('notification_detail.html', notification=notification)
-    else:
-        # If no such notification is found, redirect to the notifications page
-        return redirect(url_for('get_notifications'))
+    try:
+        # Fetch the specific notification details, ensuring it's not outdated
+        cursor.execute('''
+            SELECT * FROM important_dates 
+            WHERE id = %s AND user_id = %s AND important_date >= CURDATE()
+        ''', (notification_id, session['user_id']))
+        notification = cursor.fetchone()
 
+        if notification:
+            # Mark the notification as seen if found
+            cursor.execute('''
+                UPDATE important_dates 
+                SET seen = 1 
+                WHERE id = %s AND user_id = %s
+            ''', (notification_id, session['user_id']))
+            mysql.connection.commit()
+            
+            # Fetch the associated contact details
+            contact_id = notification[1]  # Assuming the contact_id is stored in the notification table
+            cursor.execute('SELECT * FROM contact WHERE contact_id = %s AND user_id = %s', 
+                           (contact_id, session['user_id']))
+            contact = cursor.fetchone()
+        else:
+            contact = None  # No contact data if notification not found
 
-# Delete outdated important dates
-@app.before_request
-def delete_outdated_dates():
-    cursor = mysql.connection.cursor()
-    cursor.execute('''DELETE FROM important_dates WHERE important_date < CURDATE()''')
-    mysql.connection.commit()
-    cursor.close()
+        cursor.close()
 
-# Other existing routes like update_contact, get_contacts, etc. go here...
+        if notification:
+            # Render the template with both notification and contact details
+            return render_template('notification_detail.html', notification=notification, contact=contact)
+        else:
+            # Redirect to notifications page if not found
+            return redirect(url_for('get_notifications'))
+    except Exception as e:
+        print(f"Error: {e}")
+        return "Internal Server Error", 500
 
 @app.route('/contacts/update/<int:contact_id>', methods=['GET', 'POST'])
 def update_contact(contact_id):
@@ -184,26 +247,28 @@ def update_contact(contact_id):
 
     return render_template('update_contact.html', contact=contact)
 
-# In the contacts route
 @app.route('/contacts/list')
 def get_contacts():
     if not is_logged_in():
         return redirect(url_for('signin'))
 
+    # Fetching contacts for the current user
     cursor = mysql.connection.cursor()
     cursor.execute('SELECT * FROM contact WHERE user_id = %s', (session['user_id'],))
     contacts = cursor.fetchall()
     cursor.close()
+
+    # Fetching upcoming important dates that haven't been seen yet (seen = 0)
     cursor = mysql.connection.cursor()
     cursor.execute('''SELECT * FROM important_dates 
-                      WHERE user_id = %s AND important_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 7 DAY)''', 
+                      WHERE user_id = %s 
+                      AND important_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 7 DAY)
+                      AND seen = 0''',  # Filtering to exclude seen notifications
                    (session['user_id'],))
     upcoming_dates = cursor.fetchall()
     cursor.close()
 
-    # Fetch notifications for important dates
-   # You can modify this to return the actual data
-  
+    # Returning the updated data to the template
     return render_template('contact_list.html', contacts=contacts, notifications=upcoming_dates)
 
 # Get a single contact by ID
@@ -264,11 +329,13 @@ def search_contacts():
     contacts = cursor.fetchall()
 
     # Fetch upcoming important dates within the next 7 days
+    cursor = mysql.connection.cursor()
     cursor.execute('''SELECT * FROM important_dates 
-                      WHERE user_id = %s AND important_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 7 DAY)''', 
+                      WHERE user_id = %s 
+                      AND important_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 7 DAY)
+                      AND seen = 0''',  # Filtering to exclude seen notifications
                    (session['user_id'],))
     upcoming_dates = cursor.fetchall()
-    
     cursor.close()
 
     # Render the contact_list template with contacts and notifications
@@ -357,14 +424,7 @@ def view_contacts(group_name):
     contacts = cursor.fetchall()
     cursor.close()
 
-    return render_template('view_contacts.html', contacts=contacts)
-
-# View contacts of a group by ID
-@app.route('/group/<int:group_id>', methods=['GET'])
-def view_group_contacts(group_id):
-    group_contacts = fetch_contacts_by_group(group_id)  # Replace with your actual logic to fetch contacts in the group
-    return render_template('group_contacts.html', group_contacts=group_contacts)
-
+    return render_template('view_contacts.html', contacts=contacts,group_name=group_name)
 # Create a group and assign contacts
 @app.route('/create_group_and_assign', methods=['GET'])
 def create_group_and_assign():
@@ -405,6 +465,20 @@ def remove_favorite(contact_id):
     cursor.close()
 
     return redirect(url_for('view_favorites'))
+@app.route('/groups/remove_contact/<int:contact_id>/<string:group_name>', methods=['POST'])
+def remove_from_group(contact_id, group_name):
+    if not is_logged_in():
+        return redirect(url_for('signin'))
+
+    cursor = mysql.connection.cursor()
+    cursor.execute('''UPDATE contact 
+                      SET group_name = '-'
+                      WHERE contact_id = %s AND group_name = %s AND user_id = %s''', 
+                   (contact_id, group_name, session['user_id']))
+    mysql.connection.commit()
+    cursor.close()
+
+    return redirect(url_for('view_contacts', group_name=group_name))
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))  # Use PORT environment variable or default to 5000

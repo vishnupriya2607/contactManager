@@ -198,6 +198,20 @@
 .dropdown a:hover {
     background-color: var(--light-bg); /* Background color on hover */
 }
+.btn {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 8px;
+    border-radius: 8px;
+    text-align: center;
+    display: inline-block;
+    transition: background-color 0.3s;
+}
+
+.btn:hover {
+    background-color: var(--hover-color);
+    cursor: pointer;
+}
 
 /* Notification Badge Styles */
 .notification-badge {
@@ -275,7 +289,7 @@
                 <!-- Notification Dropdown -->
                 <div id="notificationDropdown" class="dropdown">
                     {% for notification in notifications %}
-                        <a href="{{ url_for('view_notification', notification_id=loop.index0) }}">
+                        <a href="{{ url_for('view_notification', notification_id=notification[0]) }}">
                             Notification {{ loop.index }} - {{ notification[0] }} <!-- Assuming notification[0] contains the message -->
                         </a>
                     {% endfor %}
