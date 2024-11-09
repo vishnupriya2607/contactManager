@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact Page</title>
+    <title>Contacts Page</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <style>
@@ -186,6 +186,7 @@
     border-radius: 5px; /* Rounded corners */
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
     z-index: 1; /* Ensure it appears above other elements */
+    width:150px;
 }
 
 .dropdown a {
@@ -229,6 +230,124 @@
     width:100px;
     text-align: center;
 }
+.icon {
+            position: relative;
+        }
+
+        .dropdown {
+            display: none; /* Hidden by default */
+            position: absolute;
+            top: 40px; /* Adjust based on your icon size */
+            right: 0;
+            background-color: white;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 300px; /* Adjust width as needed */
+            z-index: 1;
+            padding: 15px;
+        }
+        .dropdown1 {
+            display: none; /* Hidden by default */
+            position: absolute;
+            top: 40px; /* Adjust based on your icon size */
+            right: 0;
+            background-color: white;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 180px; /* Adjust width as needed */
+            z-index: 1;
+            padding: 15px;
+        }
+
+        .user-info {
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .user-info p {
+            margin: 5px 0;
+            color: var(--text-color);
+            font-size: 14px;
+        }
+
+        .dropdown a {
+            display: block;
+            padding: 10px 0;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .dropdown a:hover {
+            color: var(--primary-color);
+        }
+        .dropdown1 a {
+            display: block;
+            padding: 10px 0;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .dropdown1 a:hover {
+            color: var(--primary-color);
+        }
+        .mini-cards {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .mini-card {
+            flex: 1;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 500px;
+            height: 100px;
+        }
+
+        .mini-card h1 {
+            font-size: 14px;
+        }
+
+        .mini-card p {
+            margin: 0;
+            font-size: 14px;
+        }
+
+        .dropdown .logout {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+         /* Icon container styling */
+         .icon-container {
+            display: flex;
+            align-items: center;
+            margin-top: 5px; /* Space above icons */
+        }
+
+        .icon-container i {
+            margin-right: 10px; /* Space between icon and text */
+            color: #555; /* Icon color */
+        }
+        .icon-container {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Space between the icon and the name */
+}
+
+.icon-container i {
+    font-size: 24px; /* Adjust the icon size */
+    color: #555; /* Icon color */
+}
+
 </style>
     <script>
         // Function to toggle the dropdown for notifications
@@ -287,7 +406,7 @@
                     <span class="notification-badge">{{ notifications | length }}</span> <!-- Show notification count -->
                 {% endif %}
                 <!-- Notification Dropdown -->
-                <div id="notificationDropdown" class="dropdown">
+                <div id="notificationDropdown" class="dropdown1">
                     {% for notification in notifications %}
                         <a href="{{ url_for('view_notification', notification_id=notification[0]) }}">
                             Notification {{ loop.index }} - {{ notification[0] }} <!-- Assuming notification[0] contains the message -->
@@ -297,12 +416,48 @@
             </div>
             
             <div class="icon">
-                <i class="fas fa-user-circle" onclick="toggleUserDropdown()"></i>
-                <!-- User Dropdown -->
+                <i class="fas fa-user-circle" onclick="toggleUserDropdown()" style="cursor: pointer;"></i>
                 <div id="userDropdown" class="dropdown">
-                    <a href="#">Profile</a>
-                    <a href="{{url_for('logout')}}">Logout</a>
+                <div class="user-info">
+                    <div class="icon-container">
+                    <i class="fas fa-user-circle" onclick="toggleUserDropdown()" style="cursor: pointer;"></i>
+                    {% if user %}
+                    <h2>{{ user[1] }}</h2>
+                  {% endif %}
                 </div>
+                  
+                    <!-- Icon containers for email and phone -->
+                    <div class="icon-container">
+                        <i class="fas fa-envelope"></i>
+                        {% if user %}
+    <span>{{user[2] }}</span> <!-- or whatever data you need -->
+{% else %}
+    <span>User not found</span>
+{% endif %}
+
+                    </div>
+                
+    
+            <!-- Mini cards inside the main card -->
+            <div class="mini-cards">
+                <div class="mini-card">
+                    <h1>Contacts</h1>
+                    {% if contact_count %}
+                    <p>{{ contact_count }}</p>
+                  {% endif %}
+                </div>
+                <div class="mini-card">
+                    <h1>Groups</h1>
+                    {% if group_count %}
+                    <p>{{ group_count }}</p>
+                  {% endif %}
+                </div>
+            </div>
+            <a href="#" class="logout-link">Logout</a>
+        </div>
+    </div>
+</div>
+    
             </div>
         </div>
     </div>

@@ -58,6 +58,8 @@ def forgot_password():
 
     return render_template('forgot_password.html')
 
+
+
 # Login route
 @app.route('/signin', methods=['GET', 'POST'])
 def signin():
@@ -246,7 +248,6 @@ def update_contact(contact_id):
         return redirect(url_for('get_contacts'))
 
     return render_template('update_contact.html', contact=contact)
-
 @app.route('/contacts/list')
 def get_contacts():
     if not is_logged_in():
@@ -263,13 +264,36 @@ def get_contacts():
     cursor.execute('''SELECT * FROM important_dates 
                       WHERE user_id = %s 
                       AND important_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 7 DAY)
-                      AND seen = 0''',  # Filtering to exclude seen notifications
+                      AND seen = 0''',
                    (session['user_id'],))
     upcoming_dates = cursor.fetchall()
     cursor.close()
 
+    # Fetching user details
+    cursor = mysql.connection.cursor()
+    cursor.execute('SELECT * FROM signup WHERE user_id = %s', (session['user_id'],))
+    user = cursor.fetchone()
+    cursor.close()
+
+    # Fetching the count of contacts for the user
+    cursor = mysql.connection.cursor()
+    cursor.execute('SELECT COUNT(*) FROM contact WHERE user_id = %s', (session['user_id'],))
+    contact_count = cursor.fetchone()[0]
+    cursor.close()
+
+    # Fetching the count of groups for the user
+    cursor = mysql.connection.cursor()
+    cursor.execute('SELECT COUNT(*) FROM contact_labels WHERE user_id = %s', (session['user_id'],))
+    group_count = cursor.fetchone()[0]
+    cursor.close()
+
     # Returning the updated data to the template
-    return render_template('contact_list.html', contacts=contacts, notifications=upcoming_dates)
+    return render_template('contact_list.html',
+                           contacts=contacts,
+                           notifications=upcoming_dates,
+                           user=user,
+                           contact_count=contact_count,
+                           group_count=group_count)
 
 # Get a single contact by ID
 @app.route('/contacts/<int:contact_id>')
